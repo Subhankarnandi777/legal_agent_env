@@ -1,0 +1,143 @@
+spec_version: 1
+
+name: legal-agent-env
+type: environment
+runtime: docker
+app: server.app:app
+port: 7860
+
+description: >
+  Legal Agent OpenEnv environment where an AI agent learns legal reasoning tasks:
+  contract clause review, legal issue spotting, and litigation strategy building.
+  The environment supports reinforcement learning with shaped rewards and multi-step episodes.
+
+author: your-username
+version: "1.0.0"
+license: MIT
+
+tags:
+  - openenv
+  - legal
+  - legal-ai
+  - reinforcement-learning
+  - contract-review
+  - legal-reasoning
+
+# ── API ENDPOINTS ─────────────────────────────────────────────────────────────
+endpoints:
+  health: /health
+  reset: /reset
+  step: /step
+  state: /state
+  tasks: /tasks
+  grader: /grader
+
+# ── TASK DEFINITIONS ──────────────────────────────────────────────────────────
+tasks:
+  - id: easy
+    name: Contract Clause Review
+    difficulty: easy
+    max_steps: 20
+    description: Identify legally problematic clauses and suggest fixes.
+
+  - id: medium
+    name: Legal Issue Spotting
+    difficulty: medium
+    max_steps: 15
+    description: Identify legal issues in a landlord-tenant fact pattern.
+
+  - id: hard
+    name: Case Strategy Building
+    difficulty: hard
+    max_steps: 25
+    description: Build a defense strategy identifying key legal defenses.
+
+# ── OBSERVATION SPACE ─────────────────────────────────────────────────────────
+observation_space:
+  type: structured
+  fields:
+    - name: task_id
+      type: string
+    - name: task_description
+      type: string
+    - name: document_text
+      type: string
+    - name: clauses
+      type: list
+    - name: issues_found
+      type: list[string]
+    - name: issues_remaining
+      type: int
+    - name: last_action_feedback
+      type: string
+    - name: reward_last_step
+      type: float
+    - name: step_count
+      type: int
+    - name: max_steps
+      type: int
+    - name: done
+      type: bool
+    - name: hint
+      type: string
+
+# ── ACTION SPACE ──────────────────────────────────────────────────────────────
+action_space:
+  type: structured
+  fields:
+    - name: action_type
+      type: string
+      required: true
+      options:
+        - flag_issue
+        - approve_clause
+        - suggest_fix
+        - identify_law
+        - submit_strategy
+
+    - name: clause_id
+      type: int
+      required: false
+
+    - name: issue_type
+      type: string
+      required: false
+
+    - name: area_of_law
+      type: string
+      required: false
+
+    - name: doctrine
+      type: string
+      required: false
+
+    - name: suggested_fix
+      type: string
+      required: false
+
+    - name: reasoning
+      type: string
+      required: false
+
+# ── REWARD SYSTEM ─────────────────────────────────────────────────────────────
+reward:
+  description: >
+    Agents receive positive rewards for correctly identifying legal issues,
+    approving valid clauses, suggesting fixes, identifying legal doctrines,
+    and submitting valid legal strategies. False positives and invalid actions
+    are penalised. Episode score is calculated using precision, recall, and efficiency.
+
+# ── EPISODE TERMINATION ───────────────────────────────────────────────────────
+termination:
+  conditions:
+    - All issues identified
+    - Maximum steps reached
+    - Strategy submitted (hard task)
+
+# ── GRADING ───────────────────────────────────────────────────────────────────
+grading:
+  method: F1_score_with_efficiency_bonus
+  score_range: 0.0 - 1.0
+  description: >
+    Final score is computed using precision and recall of identified issues,
+    with a bonus for completing the task in fewer steps.
