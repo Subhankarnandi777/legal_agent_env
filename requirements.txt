@@ -6,3 +6,4 @@ httpx==0.27.0
 pyyaml==6.0.1
 openai
 python-dotenv
+openenv-core>=0.2.0
