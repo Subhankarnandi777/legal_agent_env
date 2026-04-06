@@ -51,276 +51,324 @@ LANDING_PAGE = """
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚖️ Legal Agent OpenEnv</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>⚖️ Legal Agent OpenEnv | Premium Environment</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #030712;
+    --card-bg: rgba(17, 24, 39, 0.7);
+    --border: rgba(255, 255, 255, 0.08);
+    --primary: #3b82f6;
+    --secondary: #8b5cf6;
+    --accent: #10b981;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-hover: rgba(255, 255, 255, 0.05);
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Inter', sans-serif;
-    background: #0a0e1a;
-    color: #e2e8f0;
+    background-color: var(--bg);
+    color: var(--text-main);
     min-height: 100vh;
     overflow-x: hidden;
+    line-height: 1.6;
   }
 
-  /* Animated gradient background */
-  body::before {
-    content: '';
+  h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+
+  /* Premium Animated Background */
+  .bg-glow {
     position: fixed;
-    top: -50%; left: -50%;
-    width: 200%; height: 200%;
-    background: radial-gradient(circle at 20% 50%, rgba(59,130,246,0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(139,92,246,0.08) 0%, transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(16,185,129,0.06) 0%, transparent 50%);
-    animation: bgShift 20s ease-in-out infinite;
-    z-index: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%);
+    overflow: hidden;
   }
-  @keyframes bgShift { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(3deg)} }
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; position: relative; z-index: 1; }
-
-  /* Header */
-  .header { text-align: center; margin-bottom: 3rem; }
-  .header .badge {
-    display: inline-flex; align-items: center; gap: .5rem;
-    background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
-    color: #34d399; padding: .35rem 1rem; border-radius: 999px;
-    font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
-    margin-bottom: 1.25rem;
+  .blob {
+    position: absolute;
+    width: 500px; height: 500px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+    filter: blur(80px);
+    border-radius: 50%;
+    animation: move 25s infinite alternate;
   }
-  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .blob.one { top: -100px; left: -100px; animation-delay: 0s; }
+  .blob.two { bottom: -100px; right: -100px; animation-delay: -5s; width: 600px; height: 600px; background: rgba(16, 185, 129, 0.1); }
+  .blob.three { top: 20%; right: 10%; animation-delay: -10s; width: 300px; height: 300px; background: rgba(239, 68, 68, 0.05); }
 
-  .header h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -.02em;
-    background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+  @keyframes move {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(100px, 50px) scale(1.1); }
+    66% { transform: translate(-50px, 120px) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; position: relative; }
+
+  /* Animated Header */
+  .header { text-align: center; margin-bottom: 5rem; animation: fadeInDown 1s ease-out; }
+  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .badge-container { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+  .badge {
+    padding: 0.5rem 1.25rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 0.5rem;
+    backdrop-filter: blur(8px);
+  }
+  .badge.status { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; }
+  .badge.version { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #60a5fa; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 12px currentColor; animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+
+  .header h1 {
+    font-size: 4rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.1;
+    background: linear-gradient(to right, #fff, #94a3b8);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: .6rem;
   }
-  .header p { font-size: 1.1rem; color: #94a3b8; max-width: 650px; margin: 0 auto; line-height: 1.6; }
+  .header p { font-size: 1.25rem; color: var(--text-muted); max-width: 700px; margin: 0 auto; font-weight: 300; }
 
-  /* Stats bar */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
-  .stat {
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px; padding: 1.25rem; text-align: center;
-    backdrop-filter: blur(10px); transition: all .3s;
+  /* Glossy Grid Cards */
+  .grid-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+
+  .hero-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 32px;
+    padding: 3rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
   }
-  .stat:hover { border-color: rgba(96,165,250,0.3); transform: translateY(-2px); }
-  .stat .num { font-size: 1.8rem; font-weight: 800; color: #60a5fa; }
-  .stat .label { font-size: .75rem; color: #64748b; text-transform: uppercase; letter-spacing: .08em; margin-top: .25rem; }
-
-  /* Glass card */
-  .card {
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem;
-    backdrop-filter: blur(12px); transition: border-color .3s;
+  .hero-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
   }
-  .card:hover { border-color: rgba(139,92,246,0.25); }
-  .card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: .6rem; }
 
-  /* Task cards */
-  .tasks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .stats-strip { display: flex; gap: 2rem; margin-top: 3rem; }
+  .stat-item { border-left: 1px solid var(--border); padding-left: 1.5rem; }
+  .stat-item .val { font-size: 2rem; font-weight: 800; color: #fff; display: block; }
+  .stat-item .lab { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* Task Section */
+  .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; }
+  
+  .task-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 4rem; }
   .task-card {
-    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px; padding: 1.5rem; transition: all .3s; position: relative; overflow: hidden;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: default;
   }
-  .task-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    border-radius: 16px 16px 0 0;
+  .task-card:hover {
+    transform: translateY(-8px);
+    background: var(--glass-hover);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
   }
-  .task-card.easy::before { background: linear-gradient(90deg, #34d399, #6ee7b7); }
-  .task-card.medium::before { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
-  .task-card.hard::before { background: linear-gradient(90deg, #f87171, #ef4444); }
-  .task-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.12); }
-
-  .task-card .diff {
-    display: inline-block; padding: .2rem .7rem; border-radius: 999px;
-    font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: .75rem;
+  .task-card .icon-box {
+    width: 56px; height: 56px; border-radius: 16px; 
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 1.5rem;
   }
-  .easy .diff { background: rgba(16,185,129,0.15); color: #34d399; }
-  .medium .diff { background: rgba(245,158,11,0.15); color: #fbbf24; }
-  .hard .diff { background: rgba(239,68,68,0.15); color: #f87171; }
+  .task-card.easy .icon-box { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  .task-card.medium .icon-box { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  .task-card.hard .icon-box { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-  .task-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
-  .task-card p { font-size: .8rem; color: #94a3b8; line-height: 1.5; margin-bottom: .75rem; }
-  .task-card .meta { font-size: .7rem; color: #64748b; }
+  .task-card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; color: #fff; }
+  .task-card p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; min-height: 4rem; }
+  
+  .tag { padding: 0.25rem 0.75rem; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+  .easy .tag { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  .medium .tag { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  .hard .tag { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-  /* Endpoints table */
-  .ep-table { width: 100%; border-collapse: collapse; }
-  .ep-table th { text-align: left; font-size: .7rem; color: #64748b; text-transform: uppercase;
-    letter-spacing: .08em; padding: .6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .ep-table td { padding: .75rem 1rem; font-size: .85rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
-  .ep-table tr:hover td { background: rgba(255,255,255,0.02); }
-  .method {
-    display: inline-block; padding: .15rem .55rem; border-radius: 6px;
-    font-size: .65rem; font-weight: 700; letter-spacing: .05em;
+  /* API Section with Interactive Terminal */
+  .api-card {
+    background: #0f172a; border: 1px solid var(--border); border-radius: 24px;
+    padding: 0; overflow: hidden; height: 100%;
   }
-  .method.get { background: rgba(16,185,129,0.15); color: #34d399; }
-  .method.post { background: rgba(59,130,246,0.15); color: #60a5fa; }
-  .ep-path { font-family: 'Courier New', monospace; color: #a78bfa; font-weight: 600; }
+  .api-header { background: rgba(255,255,255,0.03); padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .dots { display: flex; gap: 6px; }
+  .dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
 
-  /* Reward table */
-  .rw-table { width: 100%; border-collapse: collapse; }
-  .rw-table th { text-align: left; font-size: .7rem; color: #64748b; text-transform: uppercase;
-    letter-spacing: .08em; padding: .6rem .75rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .rw-table td { padding: .6rem .75rem; font-size: .82rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
-  .rw-pos { color: #34d399; font-weight: 600; }
-  .rw-neg { color: #f87171; font-weight: 600; }
-
-  /* Try it section */
-  .try-section { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
-  .try-btn {
-    padding: .65rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.04); color: #e2e8f0; font-size: .85rem; font-weight: 600;
-    cursor: pointer; transition: all .3s; font-family: 'Inter', sans-serif;
+  .endpoint-list { padding: 1rem; }
+  .endpoint {
+    display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.5rem;
+    border-radius: 12px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s;
   }
-  .try-btn:hover { background: rgba(96,165,250,0.15); border-color: rgba(96,165,250,0.4); color: #60a5fa; }
-  .try-btn.primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; color: #fff; }
-  .try-btn.primary:hover { opacity: .9; transform: translateY(-1px); }
+  .endpoint:hover { background: rgba(255,255,255,0.05); }
+  .method { font-size: 0.65rem; font-weight: 800; padding: 0.2rem 0.5rem; border-radius: 4px; min-width: 45px; text-align: center; }
+  .method.get { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .method.post { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+  .path { font-family: 'Courier New', monospace; font-size: 0.85rem; color: #94a3b8; }
 
+  /* Result Box */
+  #result-container { padding: 2rem; background: #020617; min-height: 200px; }
   #result-box {
-    margin-top: 1rem; padding: 1.25rem; border-radius: 12px;
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06);
-    font-family: 'Courier New', monospace; font-size: .8rem; color: #94a3b8;
-    max-height: 300px; overflow-y: auto; white-space: pre-wrap; display: none;
+    font-family: 'Courier New', monospace; font-size: 0.85rem; color: #60a5fa;
+    white-space: pre-wrap; margin: 0; height: 100%;
   }
+  .blink { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
 
-  /* Footer */
-  .footer { text-align: center; margin-top: 3rem; padding-top: 2rem;
-    border-top: 1px solid rgba(255,255,255,0.05); color: #475569; font-size: .8rem; }
-  .footer a { color: #60a5fa; text-decoration: none; }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .tasks-grid { grid-template-columns: 1fr; }
-    .header h1 { font-size: 2rem; }
+  /* Buttons */
+  .action-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.5rem; }
+  .btn {
+    padding: 0.75rem 1.5rem; border-radius: 14px; border: 1px solid var(--border);
+    background: var(--glass); color: #fff; font-size: 0.875rem; font-weight: 600;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    white-space: nowrap; display: flex; align-items: center; gap: 0.5rem;
   }
+  .btn:hover { background: #fff; color: #000; transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(255,255,255,0.1); }
+  .btn.primary { background: var(--primary); border: none; }
+  .btn.primary:hover { background: #60a5fa; color: #fff; box-shadow: 0 10px 20px -5px rgba(59,130,246,0.3); }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+  footer { text-align: center; margin-top: 6rem; padding-bottom: 3rem; color: var(--text-muted); font-size: 0.85rem; }
 </style>
 </head>
 <body>
+
+<div class="bg-glow">
+  <div class="blob one"></div>
+  <div class="blob two"></div>
+  <div class="blob three"></div>
+</div>
+
 <div class="container">
+  
+  <header class="header">
+    <div class="badge-container">
+      <div class="badge status"><span class="dot"></span> Environment Live</div>
+      <div class="badge version">v1.1.0 · OpenEnv 0.2.0</div>
+    </div>
+    <h1>Premium Legal Agent<br>Training Environment</h1>
+    <p>A sophisticated reward-shaping engine designed to evaluate AI agents across diverse legal reasoning trajectories.</p>
+  </header>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="badge"><span class="dot"></span> OpenEnv Compliant · Running</div>
-    <h1>⚖️ Legal Agent OpenEnv</h1>
-    <p>A reinforcement learning environment for training AI agents on complex legal reasoning — contract review, issue spotting, and litigation strategy.</p>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat"><div class="num">3</div><div class="label">Tasks</div></div>
-    <div class="stat"><div class="num">6</div><div class="label">API Endpoints</div></div>
-    <div class="stat"><div class="num">5</div><div class="label">Action Types</div></div>
-    <div class="stat"><div class="num">F1</div><div class="label">Scoring Method</div></div>
-  </div>
-
-  <!-- Tasks -->
-  <div class="card">
-    <h2>🎯 Available Tasks</h2>
-    <div class="tasks-grid">
-      <div class="task-card easy">
-        <span class="diff">Easy</span>
-        <h3>Contract Clause Review</h3>
-        <p>Identify "red flag" clauses in a SaaS agreement — vague scope, unenforceable penalties, IP risks.</p>
-        <div class="meta">Max 20 steps · 6 issues · flag_issue, approve_clause, suggest_fix</div>
+  <div class="grid-layout">
+    <div class="hero-card">
+      <div class="section-title">✨ System Overview</div>
+      <p style="font-size: 1.1rem; color: #cbd5e1; margin-bottom: 2rem;">This Space serves as an OpenEnv compliant backend. It simulates real-world legal workflows, providing agents with structured observations and immediate reward feedback.</p>
+      
+      <div class="action-bar">
+        <button class="btn primary" onclick="callApi('/health')">🏥 Health Check</button>
+        <button class="btn" onclick="callApi('/tasks')">📋 Inspect Tasks</button>
+        <a class="btn" href="/docs" target="_blank">📖 API Reference</a>
       </div>
-      <div class="task-card medium">
-        <span class="diff">Medium</span>
-        <h3>Legal Issue Spotting</h3>
-        <p>Find legal issues in a landlord-tenant fact pattern — habitability, retaliatory eviction, estoppel.</p>
-        <div class="meta">Max 15 steps · 5 issues · flag_issue, identify_law</div>
+
+      <div class="stats-strip">
+        <div class="stat-item"><span class="val">3</span><span class="lab">Scenarios</span></div>
+        <div class="stat-item"><span class="val">6</span><span class="lab">Endpoints</span></div>
+        <div class="stat-item"><span class="val">F1+</span><span class="lab">Scoring</span></div>
       </div>
-      <div class="task-card hard">
-        <span class="diff">Hard</span>
-        <h3>Case Strategy Building</h3>
-        <p>Build a defense strategy identifying key affirmative defenses in a commercial litigation case.</p>
-        <div class="meta">Max 25 steps · 4 defenses · flag_issue, submit_strategy</div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-header">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Real-time Monitor</div>
+      </div>
+      <div class="endpoint-list">
+        <div class="endpoint" onclick="callApi('/health')">
+          <span class="method get">GET</span><span class="path">/health</span>
+        </div>
+        <div class="endpoint" onclick="resetTask('easy')">
+          <span class="method post">POST</span><span class="path">/reset (easy)</span>
+        </div>
+        <div class="endpoint" onclick="resetTask('medium')">
+          <span class="method post">POST</span><span class="path">/reset (medium)</span>
+        </div>
+        <div class="endpoint" onclick="callApi('/tasks')">
+          <span class="method get">GET</span><span class="path">/tasks</span>
+        </div>
+      </div>
+      <div id="result-container">
+        <pre id="result-box">> Waiting for interaction...<span class="blink">_</span></pre>
       </div>
     </div>
   </div>
 
-  <!-- Endpoints -->
-  <div class="card">
-    <h2>🌐 API Endpoints</h2>
-    <table class="ep-table">
-      <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><span class="method get">GET</span></td><td class="ep-path">/health</td><td>Health check</td></tr>
-        <tr><td><span class="method post">POST</span></td><td class="ep-path">/reset</td><td>Start a new episode</td></tr>
-        <tr><td><span class="method post">POST</span></td><td class="ep-path">/step</td><td>Take an action in the environment</td></tr>
-        <tr><td><span class="method get">GET</span></td><td class="ep-path">/state</td><td>Get current episode state</td></tr>
-        <tr><td><span class="method get">GET</span></td><td class="ep-path">/tasks</td><td>List available tasks</td></tr>
-        <tr><td><span class="method post">POST</span></td><td class="ep-path">/grader</td><td>Score a completed episode</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Reward System -->
-  <div class="card">
-    <h2>🏆 Reward System</h2>
-    <table class="rw-table">
-      <thead><tr><th>Action Result</th><th>Reward</th></tr></thead>
-      <tbody>
-        <tr><td>Correct issue + type</td><td class="rw-pos">+0.30</td></tr>
-        <tr><td>Correct issue flagged</td><td class="rw-pos">+0.20</td></tr>
-        <tr><td>Correct legal issue (medium)</td><td class="rw-pos">+0.25</td></tr>
-        <tr><td>Defense identified (hard)</td><td class="rw-pos">+0.25</td></tr>
-        <tr><td>Incorrect issue</td><td class="rw-neg">−0.15</td></tr>
-        <tr><td>Duplicate / invalid action</td><td class="rw-neg">−0.05</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Try It -->
-  <div class="card">
-    <h2>🚀 Try It Live</h2>
-    <p style="color:#94a3b8;font-size:.85rem;margin-bottom:1rem;">Test the environment directly from here.</p>
-    <div class="try-section">
-      <button class="try-btn primary" onclick="tryEndpoint('/health')">🏥 Health Check</button>
-      <button class="try-btn" onclick="tryEndpoint('/tasks')">📋 List Tasks</button>
-      <button class="try-btn" onclick="tryReset('easy')">🟢 Reset Easy</button>
-      <button class="try-btn" onclick="tryReset('medium')">🟡 Reset Medium</button>
-      <button class="try-btn" onclick="tryReset('hard')">🔴 Reset Hard</button>
-      <button class="try-btn" onclick="tryEndpoint('/state')">📊 Get State</button>
-      <a class="try-btn" href="/docs" target="_blank">📖 Swagger Docs</a>
+  <div class="section-title" style="margin-top: 4rem;">🎯 Active Training Tracks</div>
+  <div class="task-grid">
+    <div class="task-card easy">
+      <div class="icon-box">📄</div>
+      <span class="tag">Beginner</span>
+      <h3>Contract Audit</h3>
+      <p>Identify critical risk factors like vague liability caps and missing termination notices in SaaS agreements.</p>
+      <div style="font-size: 0.75rem; color: #64748b;">REWARD: +0.30 per correct flag</div>
     </div>
-    <div id="result-box"></div>
+    
+    <div class="task-card medium">
+      <div class="icon-box">🔍</div>
+      <span class="tag">Pro</span>
+      <h3>Issue Spotting</h3>
+      <p>Extract complex doctrines like Promissory Estoppel and Habitability from real-world litigation fact patterns.</p>
+      <div style="font-size: 0.75rem; color: #64748b;">REWARD: +0.25 per identification</div>
+    </div>
+
+    <div class="task-card hard">
+      <div class="icon-box">⚖️</div>
+      <span class="tag">Expert</span>
+      <h3>Defense Strategy</h3>
+      <p>Analyze claims to build multi-layered affirmative defenses. The ultimate test of professional judgment.</p>
+      <div style="font-size: 0.75rem; color: #64748b;">REWARD: Weighted Strategy Score</div>
+    </div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <p>Legal Agent OpenEnv v1.0.0 · Apache 2.0 · Built for the <a href="#">OpenEnv Hackathon</a></p>
-  </div>
-
+  <footer>
+    <p>Powered by OpenEnv · Scaler School of Technology Hackathon · 2026</p>
+  </footer>
 </div>
 
 <script>
-  const box = document.getElementById('result-box');
-  async function tryEndpoint(path) {
-    box.style.display = 'block';
-    box.textContent = '⏳ Loading...';
+  const resultBox = document.getElementById('result-box');
+  
+  async function callApi(path) {
+    resultBox.innerHTML = `> Executing GET ${path}...\n<span class="blink">_</span>`;
     try {
-      const r = await fetch(path);
-      const d = await r.json();
-      box.textContent = JSON.stringify(d, null, 2);
-    } catch(e) { box.textContent = '❌ Error: ' + e.message; }
+      const response = await fetch(path);
+      const data = await response.json();
+      resultBox.innerHTML = `> GET ${path} SUCCESS\n\n${JSON.stringify(data, null, 2)}`;
+    } catch (e) {
+      resultBox.innerHTML = `> ERROR\n\n${e.message}`;
+    }
   }
-  async function tryReset(task) {
-    box.style.display = 'block';
-    box.textContent = '⏳ Resetting ' + task + '...';
+
+  async function resetTask(taskId) {
+    resultBox.innerHTML = `> Executing POST /reset {task_id: "${taskId}"}...\n<span class="blink">_</span>`;
     try {
-      const r = await fetch('/reset', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:task}) });
-      const d = await r.json();
-      box.textContent = JSON.stringify(d, null, 2);
-    } catch(e) { box.textContent = '❌ Error: ' + e.message; }
+      const response = await fetch('/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_id: taskId })
+      });
+      const data = await response.json();
+      resultBox.innerHTML = `> POST /reset SUCCESS\n\n${JSON.stringify(data, null, 2)}`;
+    } catch (e) {
+      resultBox.innerHTML = `> ERROR\n\n${e.message}`;
+    }
   }
 </script>
+
 </body>
 </html>
 """
+
 
 
 # ── Root ─────────────────────────────────────────────────────────────────────
