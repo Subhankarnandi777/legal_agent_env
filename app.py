@@ -8,12 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
-try:
-    from ..models import LegalAction
-    from .legal_environment import LegalEnvironment, grade_episode
-except ImportError:
-    from models import LegalAction
-    from server.legal_environment import LegalEnvironment, grade_episode
+from models import LegalAction
+from legal_environment import LegalEnvironment, grade_episode
 
 
 # ── FastAPI Setup ────────────────────────────────────────────────────────────

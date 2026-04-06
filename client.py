@@ -18,10 +18,7 @@ import asyncio
 import httpx
 from typing import Optional
 
-try:
-    from .models import LegalAction, LegalObservation, LegalState, StepResult
-except ImportError:
-    from models import LegalAction, LegalObservation, LegalState, StepResult
+from models import LegalAction, LegalObservation, LegalState, StepResult
 
 
 class _SyncLegalEnv:

@@ -7,10 +7,7 @@ from __future__ import annotations
 import uuid
 from typing import Optional
 
-try:
-    from ..models import LegalAction, LegalObservation, LegalState, StepResult, ClauseStatus
-except ImportError:
-    from models import LegalAction, LegalObservation, LegalState, StepResult, ClauseStatus
+from models import LegalAction, LegalObservation, LegalState, StepResult, ClauseStatus
 
 
 # ── TASK DATA ────────────────────────────────────────────────────────────────
