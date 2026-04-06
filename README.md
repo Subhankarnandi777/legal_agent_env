@@ -1,11 +1,4 @@
----
-title: Legal Agent OpenEnv
-emoji: ⚖️
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-pinned: false
----
+
 
 # ⚖️ Legal Agent OpenEnv Environment
 ### 🤖 Reinforcement Learning Environment for Legal Reasoning Agents
