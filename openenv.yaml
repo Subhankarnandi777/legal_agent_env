@@ -11,9 +11,9 @@ description: >
   contract clause review, legal issue spotting, and litigation strategy building.
   The environment supports reinforcement learning with shaped rewards and multi-step episodes.
 
-author: your-username
-version: "1.0.0"
-license: MIT
+author: LegalAI-Solutions
+version: "1.1.0"
+license: Apache-2.0
 
 tags:
   - openenv

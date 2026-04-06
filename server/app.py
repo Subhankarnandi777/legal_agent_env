@@ -79,6 +79,8 @@ def step(action: LegalAction):
         result = env.step(action)
         return result.model_dump()
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 

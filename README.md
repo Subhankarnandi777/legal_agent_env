@@ -1,3 +1,12 @@
+---
+title: Legal Agent OpenEnv
+emoji: ⚖️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # ⚖️ Legal Agent OpenEnv Environment
 ### 🤖 Reinforcement Learning Environment for Legal Reasoning Agents
 
@@ -6,19 +15,95 @@
 ## 📌 Problem Statement
 
 Legal document review, issue spotting, and litigation strategy development require significant time and expertise from legal professionals. Many legal tasks such as contract review, risk identification, and case analysis are repetitive and structured, making them suitable for automation using AI.
+# Legal Agent OpenEnv
 
-However, there is a lack of structured environments where AI agents can **learn legal reasoning through interaction, feedback, and rewards** rather than only static datasets.
+[![OpenEnv Compliant](https://img.shields.io/badge/OpenEnv-Compliant-green)](https://github.com/openenv/spec)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Most AI models are trained on text but are not trained to **reason step-by-step like a lawyer**.
+A specialized Reinforcement Learning environment for training and evaluating AI agents on complex legal reasoning tasks. This environment models real-world legal workflows including contract auditing, issue spotting in litigation, and case strategy building.
 
-### 🎯 This project solves the problem by:
-Building a **Reinforcement Learning Environment** where AI agents learn legal reasoning by interacting with legal documents, taking actions, receiving rewards, and improving strategies over time.
+## ⚖️ Motivation
 
-This environment can be used to train AI agents for:
-- 📄 Contract review
-- ⚖️ Legal issue spotting
-- 🧠 Litigation strategy planning
-- 📚 Legal reasoning
+Legal professionals spend thousands of hours on routine tasks like identifying "red flag" clauses or spotting potential liabilities in fact patterns. LLMs show promise in this domain, but lack standardized evaluation environments that measure **trajectory-based reasoning**, **precision**, and **efficiency** beyond simple one-shot QA. 
+
+**Legal Agent OpenEnv** fills this gap by providing:
+- **Interactive Multi-Step Episodes**: Agents must interact with documents and provide structured feedback.
+- **Differentiated Difficulty**: From basic clause tagging (Easy) to complex litigation strategy (Hard).
+- **Shaped Rewards**: Feedback signal provided at every step to guide reinforcement learning agents.
+
+---
+
+## 🚀 Tasks & Difficulty
+
+The environment provides 3 distinct tasks as per the OpenEnv specification:
+
+| Task ID | Name | Difficulty | Description | Max Steps |
+| :--- | :--- | :--- | :--- | :--- |
+| **easy** | Contract Review | Easy | Identifying "red flag" clauses (e.g. overbroad liability) in a SaaS agreement. | 20 |
+| **medium** | Issue Spotting | Medium | Finding legal issues (Retaliatory Eviction, Warranty of Habitability) in a fact pattern. | 15 |
+| **hard** | Case Strategy | Hard | Building a defense strategy by identifying key affirmative defenses in a litigation file. | 25 |
+
+---
+
+## 🛠️ Action & Observation Space
+
+### Observation Space
+The observation is a typed Pydantic model (`LegalObservation`) containing:
+- `document_text`: The full text of the legal document/fact pattern.
+- `clauses`: A list of specific segments to review (for Easy task).
+- `issues_found`: List of issues the agent has successfully identified so far.
+- `issues_remaining`: Numeric count of hidden issues.
+- `last_action_feedback`: Natural language feedback from the "senior partner" (environment).
+
+### Action Space
+Agents interact via the `LegalAction` model:
+- `action_type`: `flag_issue`, `approve_clause`, `suggest_fix`, `identify_law`, `submit_strategy`.
+- `clause_id`: ID of the clause being addressed.
+- `issue_type`: The specific legal issue being flagged.
+- `reasoning`: (Optional) The agent's internal thought process.
+
+---
+
+## 📦 Getting Started
+
+### Prerequisites
+- Python 3.9+
+- Docker (for containerized execution)
+
+### Installation
+```bash
+pip install -r requirements.txt
+```
+
+### Running Locally
+To start the environment server:
+```bash
+python -m uvicorn server.app:app --port 7860
+```
+
+### Running the Baseline
+The baseline script uses the OpenAI client to run a model against the environment.
+```bash
+export OPENAI_API_KEY="your-key"
+export MODEL_NAME="gpt-4o"
+export ENV_BASE_URL="http://localhost:7860"
+
+python inference.py
+```
+
+---
+
+## 🧪 Validation & Scoring
+
+The environment uses an **F1-Score with Efficiency Bonus** grader. High scores are awarded for:
+1. Identifying all real issues (**High Recall**).
+2. Avoiding incorrect flags (**High Precision**).
+3. Completing the task in the minimum number of steps (**Efficiency**).
+
+---
+
+## 📄 License
+This project is licensed under the Apache License 2.0.
 - 🏛️ Legal decision making
 - 🔐 Compliance checking
 - 🤖 Legal AI assistants

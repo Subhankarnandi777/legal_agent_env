@@ -52,6 +52,18 @@ class _SyncLegalEnv:
         resp.raise_for_status()
         return LegalState(**resp.json())
 
+    def grader(self, task_id: str, issues_found: list[str], false_positives: int, total_steps: int, strategy_submitted: bool = False) -> float:
+        payload = {
+            "task_id": task_id,
+            "issues_found": issues_found,
+            "false_positives": false_positives,
+            "total_steps": total_steps,
+            "strategy_submitted": strategy_submitted
+        }
+        resp = self._client.post(f"{self._base}/grader", json=payload)
+        resp.raise_for_status()
+        return resp.json()["score"]
+
     def close(self):
         self._client.close()
 
@@ -115,6 +127,18 @@ class LegalEnv:
         r = await self._client.get(f"{self._base}/state")
         r.raise_for_status()
         return LegalState(**r.json())
+
+    async def grader(self, task_id: str, issues_found: list[str], false_positives: int, total_steps: int, strategy_submitted: bool = False) -> float:
+        payload = {
+            "task_id": task_id,
+            "issues_found": issues_found,
+            "false_positives": false_positives,
+            "total_steps": total_steps,
+            "strategy_submitted": strategy_submitted
+        }
+        r = await self._client.post(f"{self._base}/grader", json=payload)
+        r.raise_for_status()
+        return r.json()["score"]
 
     async def close(self):
         if self._client:

@@ -4,8 +4,8 @@ These are shared between server and client.
 """
 
 from __future__ import annotations
-from typing import Optional, List
-from pydantic import BaseModel
+from typing import Optional, List, Any
+from pydantic import BaseModel, Field
 
 
 # ── ACTION ────────────────────────────────────────────────────────────────────
@@ -44,15 +44,15 @@ class LegalObservation(BaseModel):
     task_id: str                            # "easy" | "medium" | "hard"
     task_description: str                   # plain-English instruction
     document_text: str                      # full contract / fact pattern
-    clauses: List[ClauseStatus] = []        # per-clause status (Task 1)
-    issues_found: List[str] = []            # issues identified so far
-    issues_remaining: int = 0              # how many real issues still hidden
-    last_action_feedback: str = ""          # what happened after last action
-    reward_last_step: float = 0.0          # reward from previous step
+    clauses: List[ClauseStatus] = Field(default_factory=list)
+    issues_found: List[str] = Field(default_factory=list)
+    issues_remaining: int = 0
+    last_action_feedback: str = ""
+    reward_last_step: float = 0.0
     step_count: int = 0
     max_steps: int = 20
     done: bool = False
-    hint: str = ""                          # appears after 2 failed steps
+    hint: str = ""
 
 
 # ── STATE ─────────────────────────────────────────────────────────────────────

@@ -104,7 +104,7 @@ class LegalEnvironment:
         self.total_reward += reward
 
         # End conditions
-        if len(self.issues_found) >= self.task["real_issue_count"]:
+        if self.task_id != "hard" and len(self.issues_found) >= self.task["real_issue_count"]:
             self.done = True
             feedback += " ✓ All issues identified."
 
@@ -225,17 +225,26 @@ class LegalEnvironment:
 
     # ── OBSERVATION ──────────────────────────────────────────────────────────
     def _build_observation(self, feedback):
+        clauses = []
+        if self.task_id == "easy":
+            clauses = [
+                ClauseStatus(id=c["id"], text=c["text"], status="unreviewed")
+                for c in self.task["clauses"]
+            ]
+
         return LegalObservation(
             task_id=self.task["task_id"],
             task_description=self.task["task_description"],
             document_text=self.task["document_text"],
-            issues_found=list(self.issues_found),
+            clauses=clauses,
+            issues_found=[str(i) for i in self.issues_found],
             issues_remaining=self.task["real_issue_count"] - len(self.issues_found),
             last_action_feedback=feedback,
             reward_last_step=0.0,
             step_count=self.step_count,
             max_steps=self.task["max_steps"],
             done=self.done,
+            hint="",
         )
 
 

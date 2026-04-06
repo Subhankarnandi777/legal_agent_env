@@ -18,11 +18,15 @@ from models import LegalAction
 # ── Load .env ─────────────────────────────────────────────
 load_dotenv()
 
-# ── Config from .env ──────────────────────────────────────
-IMAGE_NAME = os.getenv("IMAGE_NAME", "")
-API_KEY = os.getenv("HF_TOKEN")
-API_BASE_URL = os.getenv("API_BASE_URL")
-MODEL_NAME = os.getenv("MODEL_NAME")
+# ── Config ──────────────────────────────────────────────
+API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o")
+HF_TOKEN = os.getenv("HF_TOKEN")
+
+# Optional - if you use from_docker_image():
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+IMAGE_NAME = os.getenv("IMAGE_NAME", LOCAL_IMAGE_NAME or "")
+
 ENV_BASE_URL = os.getenv("ENV_BASE_URL")
 
 MAX_STEPS = int(os.getenv("MAX_STEPS", 25))
@@ -116,7 +120,7 @@ def rule_based_action(obs):
             7: "missing_governing_law",
         }
         for cid, issue in mapping.items():
-            if cid not in obs.issues_found:
+            if str(cid) not in obs.issues_found:
                 return LegalAction(action_type="flag_issue", clause_id=cid, issue_type=issue)
 
     elif obs.task_id == "medium":
@@ -132,26 +136,57 @@ def rule_based_action(obs):
         return LegalAction(action_type="submit_strategy")
 
 
+# ── LLM Agent ─────────────────────────────────────────────────────────────
+async def get_llm_action(obs, client: OpenAI) -> LegalAction:
+    """Gets action from LLM using the OpenAI client."""
+    try:
+        prompt = build_prompt(obs, obs.step_count, [])
+        
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"}
+        )
+        
+        raw_json = response.choices[0].message.content
+        data = json.loads(raw_json)
+        
+        # Validate against LegalAction
+        return LegalAction(**data)
+    except Exception as exc:
+        # Fallback to rule-based logic for baseline reproducibility
+        return rule_based_action(obs)
+
+
 # ── Episode Loop ──────────────────────────────────────────
 async def run_episode(task_id: str):
-    llm = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
-    if IMAGE_NAME:
+    # ENV_BASE_URL takes precedence (for HF Space deployment)
+    if ENV_BASE_URL:
+        async with LegalEnv(base_url=ENV_BASE_URL) as env:
+            return await episode_loop(env, task_id, client)
+    elif IMAGE_NAME:
         env = await LegalEnv.from_docker_image(IMAGE_NAME)
         async with env:
-            return await episode_loop(env, task_id)
+            return await episode_loop(env, task_id, client)
     else:
-        async with LegalEnv(base_url=ENV_BASE_URL) as env:
-            return await episode_loop(env, task_id)
+        # Local development fallback
+        async with LegalEnv(base_url="http://localhost:7860") as env:
+            return await episode_loop(env, task_id, client)
 
 
-async def episode_loop(env, task_id: str):
+async def episode_loop(env, task_id: str, client: OpenAI):
     log_start(task=task_id, env=BENCHMARK, model=MODEL_NAME)
 
     rewards = []
-    history = []
     total_reward = 0.0
     steps_taken = 0
+    success = False
+    strategy_submitted = False
 
     try:
         result = await env.reset(task_id=task_id)
@@ -161,8 +196,11 @@ async def episode_loop(env, task_id: str):
             if result.done:
                 break
 
-            action = rule_based_action(obs)
-            action_str = action.model_dump_json()
+            action = await get_llm_action(obs, client)
+            action_json = action.model_dump_json()
+
+            if action.action_type == "submit_strategy":
+                strategy_submitted = True
 
             result = await env.step(action)
             obs = result.observation
@@ -173,9 +211,7 @@ async def episode_loop(env, task_id: str):
             total_reward += reward
             steps_taken = step
 
-            log_step(step, action_str, reward, done, None)
-
-            history.append(f"{step}: {action.action_type}({action.issue_type})")
+            log_step(step, action_json, reward, done, None)
 
             if done:
                 break
@@ -183,8 +219,19 @@ async def episode_loop(env, task_id: str):
     except Exception as exc:
         print(f"[DEBUG] Episode error: {exc}", flush=True)
 
-    max_reward = MAX_STEPS * 0.30
-    score = min(1.0, max(0.0, total_reward / max_reward))
+    try:
+        state = await env.state()
+        score = await env.grader(
+            task_id=task_id,
+            issues_found=obs.issues_found,
+            false_positives=state.false_positives,
+            total_steps=steps_taken,
+            strategy_submitted=strategy_submitted
+        )
+    except Exception as exc:
+        print(f"[DEBUG] Grader error: {exc}", flush=True)
+        score = 0.0
+
     success = score >= SUCCESS_SCORE_THRESHOLD
 
     log_end(success, steps_taken, score, rewards)
