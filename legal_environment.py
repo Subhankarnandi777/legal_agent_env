@@ -248,7 +248,11 @@ class LegalEnvironment:
 # ── GRADER ───────────────────────────────────────────────────────────────────
 def grade_episode(task_id: str, issues_found: list, false_positives: int,
                   total_steps: int, strategy_submitted: bool = False) -> float:
-
+    """
+    Returns a score strictly in the open interval (0, 1).
+    The Meta/OpenEnv Phase-2 validator requires 0 < score < 1
+    (not 0.0 and not 1.0).
+    """
     task = TASKS.get(task_id, TASK_EASY)
     total = task["real_issue_count"]
 
@@ -256,11 +260,14 @@ def grade_episode(task_id: str, issues_found: list, false_positives: int,
     recall = len(issues_found) / total
 
     if precision + recall == 0:
-        f1 = 0
+        f1 = 0.0
     else:
         f1 = 2 * precision * recall / (precision + recall)
 
     efficiency = max(0.0, (task["max_steps"] - total_steps) / task["max_steps"]) * 0.1
 
-    score = min(1.0, f1 + efficiency)
+    raw_score = f1 + efficiency
+
+    # Clamp to open interval (0.01, 0.99) — never exactly 0.0 or 1.0
+    score = max(0.01, min(0.99, raw_score))
     return round(score, 3)

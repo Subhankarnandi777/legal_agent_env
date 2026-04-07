@@ -230,7 +230,7 @@ async def episode_loop(env, task_id: str, client: OpenAI):
         )
     except Exception as exc:
         print(f"[DEBUG] Grader error: {exc}", flush=True)
-        score = 0.0
+        score = 0.01  # Must be strictly > 0.0 for Phase-2 validator
 
     success = score >= SUCCESS_SCORE_THRESHOLD
 
