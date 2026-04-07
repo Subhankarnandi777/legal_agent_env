@@ -1,6 +1,6 @@
 ---
 title: Legal Agent OpenEnv
-emoji: balanced_scale
+emoji: ⚖️
 colorFrom: blue
 colorTo: purple
 sdk: docker
