@@ -1,3 +1,12 @@
+---
+title: Legal Agent OpenEnv
+emoji: balanced_scale
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_file: app.py
+pinned: false
+---
 
 
 # ⚖️ Legal Agent OpenEnv Environment
