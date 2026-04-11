@@ -180,7 +180,7 @@ async def run_episode(task_id: str):
 
     await env.__aenter__()
 
-    score, steps, rewards, success = 0.0, 0, [], False
+    score, steps, rewards, success = 0.01, 0, [0.0], False
     try:
         score, steps, rewards, success = await episode_loop(env, task_id, client)
     except Exception as e:
