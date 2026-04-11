@@ -137,7 +137,7 @@ termination:
 # ── GRADING ───────────────────────────────────────────────────────────────────
 grading:
   method: F1_score_with_efficiency_bonus
-  score_range: 0.0 - 1.0
+  score_range: 0.01 - 0.99
   description: >
     Final score is computed using precision and recall of identified issues,
     with a bonus for completing the task in fewer steps.
