@@ -23,6 +23,9 @@ API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
+if HF_TOKEN is None:
+    raise ValueError("HF_TOKEN environment variable is required")
+
 # Optional - if you use from_docker_image():
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 IMAGE_NAME = os.getenv("IMAGE_NAME", LOCAL_IMAGE_NAME or "")
@@ -77,12 +80,13 @@ def log_start(task: str, env: str, model: str):
     print(f"[START] task={task} env={env} model={model}", flush=True)
 
 def log_step(step: int, action: str, reward: float, done: bool, error: Optional[str]):
-    err = error if error else "null"
-    print(f"[STEP] step={step} action={action} reward={reward:.2f} done={str(done).lower()} error={err}", flush=True)
+    err = str(error).replace('\n', ' ') if error else "null"
+    action_clean = action.replace('\n', '')
+    print(f"[STEP] step={step} action={action_clean} reward={reward:.2f} done={str(done).lower()} error={err}", flush=True)
 
 def log_end(success: bool, steps: int, score: float, rewards: List[float]):
     r_str = ",".join(f"{r:.2f}" for r in rewards)
-    print(f"[END] success={str(success).lower()} steps={steps} score={score:.3f} rewards={r_str}", flush=True)
+    print(f"[END] success={str(success).lower()} steps={steps} rewards={r_str}", flush=True)
 
 
 # ── Prompt Builder ────────────────────────────────────────
@@ -167,16 +171,25 @@ async def run_episode(task_id: str):
 
     # ENV_BASE_URL takes precedence (for HF Space deployment)
     if ENV_BASE_URL:
-        async with LegalEnv(base_url=ENV_BASE_URL) as env:
-            return await episode_loop(env, task_id, client)
+        env = LegalEnv(base_url=ENV_BASE_URL)
     elif IMAGE_NAME:
         env = await LegalEnv.from_docker_image(IMAGE_NAME)
-        async with env:
-            return await episode_loop(env, task_id, client)
     else:
         # Local development fallback
-        async with LegalEnv(base_url="http://localhost:7860") as env:
-            return await episode_loop(env, task_id, client)
+        env = LegalEnv(base_url="http://localhost:7860")
+
+    await env.__aenter__()
+
+    score, steps, rewards, success = 0.0, 0, [], False
+    try:
+        score, steps, rewards, success = await episode_loop(env, task_id, client)
+    except Exception as e:
+        print(f"[DEBUG] Fatal episode error: {e}", flush=True)
+    finally:
+        await env.close()
+        log_end(success, steps, score, rewards)
+        
+    return score, steps, rewards, success
 
 
 async def episode_loop(env, task_id: str, client: OpenAI):
@@ -234,7 +247,6 @@ async def episode_loop(env, task_id: str, client: OpenAI):
 
     success = score >= SUCCESS_SCORE_THRESHOLD
 
-    log_end(success, steps_taken, score, rewards)
     return score, steps_taken, rewards, success
 
 
