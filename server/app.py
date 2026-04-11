@@ -3,7 +3,7 @@ server/app.py — FastAPI server for the Legal Agent Environment.
 OpenEnv-compatible API.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -35,12 +35,7 @@ class ResetRequest(BaseModel):
     task_id: Optional[str] = "easy"
 
 
-class GraderRequest(BaseModel):
-    task_id: str
-    issues_found: list = []
-    false_positives: int = 0
-    total_steps: int = 0
-    strategy_submitted: bool = False
+
 
 
 from fastapi.responses import HTMLResponse
@@ -467,18 +462,42 @@ def tasks():
 
 # ── Grader ───────────────────────────────────────────────────────────────────
 @app.post("/grader")
-def grader(req: GraderRequest):
+async def grader(req: Request):
+    try:
+        data = await req.json()
+    except Exception:
+        data = {}
+
+    task_id = str(data.get("task_id", "easy"))
+    
+    issues_found = data.get("issues_found", [])
+    if not isinstance(issues_found, list):
+        issues_found = []
+
+    try:
+        false_positives = int(data.get("false_positives", 0))
+    except (ValueError, TypeError):
+        false_positives = 0
+
+    try:
+        total_steps = int(data.get("total_steps", 0))
+    except (ValueError, TypeError):
+        total_steps = 0
+
+    strategy_submitted = bool(data.get("strategy_submitted", False))
+
     try:
         score = grade_episode(
-            task_id=req.task_id,
-            issues_found=req.issues_found,
-            false_positives=req.false_positives,
-            total_steps=req.total_steps,
-            strategy_submitted=req.strategy_submitted,
+            task_id=task_id,
+            issues_found=issues_found,
+            false_positives=false_positives,
+            total_steps=total_steps,
+            strategy_submitted=strategy_submitted,
         )
-        return {"task_id": req.task_id, "score": score}
+        return {"task_id": task_id, "score": score}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"[DEBUG] Grader endpoint crash: {e}", flush=True)
+        return {"task_id": task_id, "score": 0.01}
 
 def main():
     import uvicorn
